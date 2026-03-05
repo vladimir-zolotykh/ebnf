@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
-
+from typing import Any
 import re
+from dataclasses import dataclass
 
 text = "23 + 42 * 10"
 symbols = [
@@ -11,9 +12,24 @@ symbols = [
     ("PLUS", r"\+"),
     ("MINUS", r"-"),
     ("TIMES", r"\*"),
+    ("DIVIDE", r"/"),
+    ("LPAREN", r"\("),
+    ("RPAREN", r"\)"),
     ("EQ", r"="),
     ("WS", r"\s+"),
 ]
+
+
+class Node:
+    def __init__(self, left, right, value):
+        pass
+
+
+@dataclass
+class Token:
+    _type: str  # "NAME", "WS", ...
+    val: Any  # "foo" for NAME, 10 for NUM
+
 
 vocab = {}
 for name, regex in symbols:
@@ -26,13 +42,13 @@ def make_pattern(dict=vocab):
 
 def tokens_iter(input_str):
     pat = make_pattern(vocab)
-    for tok in re.finditer(pat, input_str):
-        yield tok
+    for mo in re.finditer(pat, input_str):
+        yield Token(mo.lastgroup, mo.group(0))
 
 
 if __name__ == "__main__":
-    for mo in tokens_iter(text):
-        print(mo.lastgroup, mo.group(0))
+    for tok in tokens_iter(text):
+        print(tok)
 
 # >>> vocab
 # {'NAME': '(?P<NAME>[a-zA-Z_][a-zA-Z_0-9]*)', 'NUM': '(?P<NUM>\\d+)', 'PLUS': '(?P<PLUS>\\+)', 'MINUS': '(?P<MINUS>-)', 'TIMES': '(?P<TIMES>\\*)', 'EQ': '(?P<EQ>=)', 'WS': '(?P<WS>\\s+)'}
