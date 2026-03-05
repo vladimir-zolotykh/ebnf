@@ -49,6 +49,3 @@ def tokens_iter(input_str):
 if __name__ == "__main__":
     for tok in tokens_iter(text):
         print(tok)
-
-# >>> vocab
-# {'NAME': '(?P<NAME>[a-zA-Z_][a-zA-Z_0-9]*)', 'NUM': '(?P<NUM>\\d+)', 'PLUS': '(?P<PLUS>\\+)', 'MINUS': '(?P<MINUS>-)', 'TIMES': '(?P<TIMES>\\*)', 'EQ': '(?P<EQ>=)', 'WS': '(?P<WS>\\s+)'}
