@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+"""
+>>> iterate_tokens()
+Token(_type='NUM', val='23')
+Token(_type='WS', val=' ')
+Token(_type='PLUS', val='+')
+Token(_type='WS', val=' ')
+Token(_type='NUM', val='42')
+Token(_type='WS', val=' ')
+Token(_type='TIMES', val='*')
+Token(_type='WS', val=' ')
+Token(_type='NUM', val='10')
+"""
+
 from typing import Any
 import re
 from dataclasses import dataclass
@@ -31,6 +44,10 @@ class Token:
     val: Any  # "foo" for NAME, 10 for NUM
 
 
+def parse(text: str) -> Node:
+    pass
+
+
 vocab = {}
 for name, regex in symbols:
     vocab[name] = rf"(?P<{name}>{regex})"
@@ -46,6 +63,13 @@ def tokens_iter(input_str):
         yield Token(mo.lastgroup, mo.group(0))
 
 
-if __name__ == "__main__":
+def iterate_tokens(text: str = text):
     for tok in tokens_iter(text):
         print(tok)
+
+
+if __name__ == "__main__":
+    # _tokens(text)
+    import doctest
+
+    doctest.testmod()
