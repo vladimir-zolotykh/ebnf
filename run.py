@@ -44,10 +44,6 @@ class Token:
     val: Any  # "foo" for NAME, 10 for NUM
 
 
-def parse(text: str) -> Node:
-    pass
-
-
 vocab = {}
 for name, regex in symbols:
     vocab[name] = rf"(?P<{name}>{regex})"
@@ -66,6 +62,10 @@ def tokens_iter(input_str):
 def iterate_tokens(text: str = text):
     for tok in tokens_iter(text):
         print(tok)
+
+
+def parse(text: str) -> Node:
+    pass
 
 
 if __name__ == "__main__":
