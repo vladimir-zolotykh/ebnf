@@ -4,7 +4,7 @@
 """
 >>> text = "23 + 42 * 10"
 >>> parse(text)
-foo
+Node('+', Node(23, None, None), Node('*', Node(42, None, None), Node(10, None, None)))
 """
 
 from __future__ import annotations
@@ -17,6 +17,9 @@ class Node:
         self._val = val
         self._left = left
         self._right = right
+
+    def __repr__(self):
+        return f"Node({self._val!r}, {self._left}, {self._right})"
 
 
 class BinaryOperator(Node):
