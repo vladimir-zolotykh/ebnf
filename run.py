@@ -64,10 +64,6 @@ def iterate_tokens(text: str = text):
         print(tok)
 
 
-def parse(text_: str = text) -> Node:
-    return Plus(Number("23"), Star(Num("42"), Num("10"))
-
-
 if __name__ == "__main__":
     # _tokens(text)
     import doctest

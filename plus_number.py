@@ -8,27 +8,29 @@ class Node:
     def __init__(self, left: Node, right: Node, val: float | str):
         self._left = left
         self._right = right
-        self._valf = val
+        self._val = val
 
 
 class BinaryOperator(Node):
-    pass
+    def __init__(self, *args, **kwargs):
+        kwargs.update({"val": self.operator})
+        super().__init__(*args, **kwargs)
 
 
 class Plus(BinaryOperator):
-    pass
+    operator = "+"
 
 
 class Minus(BinaryOperator):
-    pass
+    operator = "-"
 
 
 class Mul(BinaryOperator):
-    pass
+    operator = "*"
 
 
 class Div(BinaryOperator):
-    pass
+    operator = "/"
 
 
 class UnaryOperator(Node):
@@ -41,3 +43,16 @@ class Negate(UnaryOperator):
 
 class Number(Node):
     pass
+
+
+def parse(text_: str) -> Node:
+    # fmt: off
+    return (
+        Plus(
+            Number("23"),
+            Mul(
+                Number("42"),
+                Number("10"))
+        )
+    )
+    # fmt: on
