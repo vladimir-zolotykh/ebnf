@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+"""
+>>> text = "23 + 42 * 10"
+>>> parse(text)
+foo
+"""
+
 from __future__ import annotations
 
 
 class Node:
-    def __init__(self, left: Node, right: Node, val: float | str):
+    def __init__(
+        self, val: float | str, left: Node | None = None, right: Node | None = None
+    ):
+        self._val = val
         self._left = left
         self._right = right
-        self._val = val
 
 
 class BinaryOperator(Node):
-    def __init__(self, *args, **kwargs):
-        kwargs.update({"val": self.operator})
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(self.operator, **kwargs)
 
 
 class Plus(BinaryOperator):
@@ -34,7 +41,8 @@ class Div(BinaryOperator):
 
 
 class UnaryOperator(Node):
-    pass
+    def __init__(self, val):
+        super().__init__(val)
 
 
 class Negate(UnaryOperator):
@@ -42,17 +50,15 @@ class Negate(UnaryOperator):
 
 
 class Number(Node):
-    pass
+    def __init__(self, val):
+        super().__init__(val)
 
 
 def parse(text_: str) -> Node:
-    # fmt: off
-    return (
-        Plus(
-            Number("23"),
-            Mul(
-                Number("42"),
-                Number("10"))
-        )
-    )
-    # fmt: on
+    return Plus(left=Number(23), right=Mul(left=Number(42), right=Number(10)))
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
