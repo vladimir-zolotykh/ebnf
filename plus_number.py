@@ -3,11 +3,14 @@
 # PYTHON_ARGCOMPLETE_OK
 """
 >>> text = "23 + 42 * 10"
->>> parse(text)
+>>> parse(input_str)
 Node('+', Node(23, None, None), Node('*', Node(42, None, None), Node(10, None, None)))
 """
 
 from __future__ import annotations
+from typing import Iterator
+from run import tokens_iter, Token
+from run import text as input_str  # noqa: F401
 
 
 class Node:
@@ -57,8 +60,31 @@ class Number(Node):
         super().__init__(val)
 
 
+def expr(tok_stream) -> Node:
+    res = Plus(term(tok_stream), term(tok_stream))
+    return res
+
+
+def term(tok_stream) -> Node:
+    res: Node = Mul(factor(tok_stream), factor(tok_stream))
+    return res
+
+
+def factor(tok_stream) -> Node:
+    res: Node = Number(tok_stream)
+    return res
+
+
+class TokenStream:
+    def __init__(self, iterator: Iterator[Token]):
+        self._iterator = iter(iterator)
+
+
 def parse(text_: str) -> Node:
-    return Plus(left=Number(23), right=Mul(left=Number(42), right=Number(10)))
+    # return Plus(left=Number(23), right=Mul(left=Number(42), right=Number(10)))
+    tok_stream = TokenStream(tokens_iter(text_))
+    res = expr(tok_stream)
+    return res
 
 
 if __name__ == "__main__":

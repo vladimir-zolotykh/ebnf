@@ -14,7 +14,7 @@ Token(_type='WS', val=' ')
 Token(_type='NUM', val='10')
 """
 
-from typing import Any
+from typing import Iterator, Any
 import re
 from dataclasses import dataclass
 
@@ -53,7 +53,7 @@ def make_pattern(dict=vocab):
     return "|".join(vocab.values())
 
 
-def tokens_iter(input_str):
+def tokens_iter(input_str) -> Iterator[Token]:
     pat = make_pattern(vocab)
     for mo in re.finditer(pat, input_str):
         yield Token(mo.lastgroup, mo.group(0))
