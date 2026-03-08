@@ -91,11 +91,12 @@ def factor(tok_stream) -> Node:
 
 class TokenStream:
     def __init__(self, iterator: Iterator[Token]):
-        self._tok = None
+        # self._tok = None
         self._iterator = iter(iterator)
+        self.next()
 
     def peek(self) -> Token:
-        self._tok = next(self._iterator, None)
+        # self._tok = next(self._iterator, None)
         return self._tok
 
     def expect(self, tok: Token = "LPAREN") -> Token:
