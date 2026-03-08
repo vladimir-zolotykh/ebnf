@@ -91,7 +91,22 @@ def factor(tok_stream) -> Node:
 
 class TokenStream:
     def __init__(self, iterator: Iterator[Token]):
+        self._tok = None
         self._iterator = iter(iterator)
+
+    def peek(self) -> Token:
+        self._tok = next(self._iterator, None)
+        return self._tok
+
+    def expect(self, tok: Token = "LPAREN") -> Token:
+        if self._tok != tok:
+            raise SyntaxError(f"Expected {tok}")
+        res = self._tok
+        self.next()
+        return res
+
+    def next(self) -> None:
+        self._tok = next(self._iterator, None)
 
 
 def parse(text_: str) -> Node:
