@@ -43,6 +43,13 @@ class Token:
     _type: str  # "NAME", "WS", ...
     val: Any  # "foo" for NAME, 10 for NUM
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Token):
+            return self._type == other._type and self.val == other.val
+        if isinstance(other, str):
+            return self._type == other
+        return False
+
 
 vocab = {}
 for name, regex in symbols:

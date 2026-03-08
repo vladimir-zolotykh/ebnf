@@ -61,17 +61,31 @@ class Number(Node):
 
 
 def expr(tok_stream) -> Node:
-    res = Plus(term(tok_stream), term(tok_stream))
+    res = term(tok_stream)
+    ops = {"PLUS": Plus, "MINUS": Minus}
+    while (op := tok_stream.peek())._type in ops:
+        tok_stream.consume()
+        res = ops[op._type](res, term(tok_stream))
     return res
 
 
 def term(tok_stream) -> Node:
-    res: Node = Mul(factor(tok_stream), factor(tok_stream))
+    res: Node = factor(tok_stream)
+    ops = {"TIMES": Mul, "DIVIDE": Div}
+    while (op := tok_stream.peek())._type in ops:
+        tok_stream.consume()
+        res = ops[op._type](res, factor(tok_stream))
     return res
 
 
 def factor(tok_stream) -> Node:
-    res: Node = Number(tok_stream)
+    tok = tok_stream.peek()
+    if tok._type == "LPAREN":
+        res = expr(tok_stream)
+        tok_stream.consume()
+        tok_stream.expect("RPAREN")
+    else:
+        res = Number(tok_stream.advance("NUM"))
     return res
 
 
