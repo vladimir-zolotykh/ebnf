@@ -4,7 +4,7 @@
 """
 >>> text = "23 + 42 * 10"
 >>> parse(input_str)
-Node('+', Node(23, None, None), Node('*', Node(42, None, None), Node(10, None, None)))
+Node(Token(_type='NUM', val='23'), None, None)
 """
 
 from __future__ import annotations
@@ -63,7 +63,7 @@ class Number(Node):
 def expr(tok_stream) -> Node:
     res = term(tok_stream)
     ops = {"PLUS": Plus, "MINUS": Minus}
-    while (op := tok_stream.peek()) in ops:
+    while (op := tok_stream.peek())._type in ops:
         tok_stream.next()
         res = ops[op._type](res, term(tok_stream))
     return res
@@ -72,7 +72,7 @@ def expr(tok_stream) -> Node:
 def term(tok_stream) -> Node:
     res: Node = factor(tok_stream)
     ops = {"TIMES": Mul, "DIVIDE": Div}
-    while (op := tok_stream.peek()) in ops:
+    while (op := tok_stream.peek())._type in ops:
         tok_stream.next()
         res = ops[op._type](res, factor(tok_stream))
     return res
