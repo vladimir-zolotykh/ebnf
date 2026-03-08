@@ -63,8 +63,8 @@ class Number(Node):
 def expr(tok_stream) -> Node:
     res = term(tok_stream)
     ops = {"PLUS": Plus, "MINUS": Minus}
-    while (op := tok_stream.peek())._type in ops:
-        tok_stream.consume()
+    while (op := tok_stream.peek()) in ops:
+        tok_stream.next()
         res = ops[op._type](res, term(tok_stream))
     return res
 
@@ -72,31 +72,29 @@ def expr(tok_stream) -> Node:
 def term(tok_stream) -> Node:
     res: Node = factor(tok_stream)
     ops = {"TIMES": Mul, "DIVIDE": Div}
-    while (op := tok_stream.peek())._type in ops:
-        tok_stream.consume()
+    while (op := tok_stream.peek()) in ops:
+        tok_stream.next()
         res = ops[op._type](res, factor(tok_stream))
     return res
 
 
 def factor(tok_stream) -> Node:
     tok = tok_stream.peek()
-    if tok._type == "LPAREN":
+    if tok == "LPAREN":
         res = expr(tok_stream)
-        tok_stream.consume()
+        tok_stream.next()
         tok_stream.expect("RPAREN")
     else:
-        res = Number(tok_stream.advance("NUM"))
+        res = Number(tok_stream.expect("NUM"))
     return res
 
 
 class TokenStream:
     def __init__(self, iterator: Iterator[Token]):
-        # self._tok = None
         self._iterator = iter(iterator)
         self.next()
 
     def peek(self) -> Token:
-        # self._tok = next(self._iterator, None)
         return self._tok
 
     def expect(self, tok: Token = "LPAREN") -> Token:
