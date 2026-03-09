@@ -4,7 +4,7 @@
 """
 >>> text = "23 + 42 * 10"
 >>> parse(input_str)
-Node('+', 23, Node('*', 42, 10))
+Plus(23, Mul(42, 10))
 """
 
 from __future__ import annotations
