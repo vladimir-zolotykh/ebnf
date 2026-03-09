@@ -4,7 +4,7 @@
 """
 >>> text = "23 + 42 * 10"
 >>> parse(input_str)
-Node(Token(_type='NUM', val='23'), None, None)
+Plus(23, Mul(42, 10))
 """
 
 from __future__ import annotations
@@ -80,9 +80,9 @@ def term(tok_stream) -> Node:
 
 def factor(tok_stream) -> Node:
     tok = tok_stream.peek()
-    if tok == "LPAREN":
+    if tok._type == "LPAREN":
         res = expr(tok_stream)
-        tok_stream.next()
+        # tok_stream.next()
         tok_stream.expect("RPAREN")
     else:
         res = Number(tok_stream.expect("NUM"))
@@ -102,7 +102,7 @@ class TokenStream:
             raise SyntaxError(f"Expected {tok}")
         res = self._tok
         self.next()
-        return res
+        return res.val  # value of a token
 
     def next(self) -> None:
         self._tok = next(self._iterator, None)
@@ -119,3 +119,5 @@ if __name__ == "__main__":
     import doctest
 
     doctest.testmod()
+    # res = expr(TokenStream(tokens_iter(input_str)))
+    # print(res)
