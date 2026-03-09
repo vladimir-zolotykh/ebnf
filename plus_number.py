@@ -4,7 +4,7 @@
 """
 >>> text = "23 + 42 * 10"
 >>> parse(input_str)
-Plus(23, Mul(42, 10))
+Node('+', 23, Node('*', 42, 10))
 """
 
 from __future__ import annotations
@@ -22,12 +22,13 @@ class Node:
         self._right = right
 
     def __repr__(self):
-        return f"Node({self._val!r}, {self._left}, {self._right})"
+        clsname = self.__class__.__name__
+        return f"{clsname}({self._val!r}, {self._left}, {self._right})"
 
 
 class BinaryOperator(Node):
-    def __init__(self, **kwargs):
-        super().__init__(self.operator, **kwargs)
+    def __init__(self, left, right):
+        super().__init__(self.operator, left, right)
 
 
 class Plus(BinaryOperator):
