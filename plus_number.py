@@ -30,6 +30,10 @@ class BinaryOperator(Node):
     def __init__(self, left, right):
         super().__init__(self.operator, left, right)
 
+    def __repr__(self):
+        clsname = self.__class__.__name__
+        return f"{clsname}({self._left}, {self._right})"
+
 
 class Plus(BinaryOperator):
     operator = "+"
@@ -59,6 +63,9 @@ class Negate(UnaryOperator):
 class Number(Node):
     def __init__(self, val):
         super().__init__(val)
+
+    def __repr__(self):
+        return f"Number({self._val!r})"
 
 
 def expr(tok_stream) -> Node:
