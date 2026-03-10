@@ -4,7 +4,7 @@
 """
 >>> parse("23")
 Number(23)
->>> parse("23 + 42")
+>>> parse("23+42")
 Plus(Number(23), Number(42))
 """
 
@@ -85,7 +85,7 @@ logger = logging.getLogger(name=__name__)
 def with_logging(func):
     @functools.wraps(func)
     def _wrap(*args, **kwargs):
-        pos = ", ".join(str(a) for a in args)
+        pos = ", ".join(str(f"<{a.__name__}()>" if callable(a) else a) for a in args)
         kw = ", ".join(f"{k}={v}" for k, v in kwargs.items())
         logger.info(f"{func.__name__}({', '.join(filter(None, [pos, kw]))})")
         res = func(*args, **kwargs)
