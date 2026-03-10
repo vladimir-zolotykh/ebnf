@@ -4,7 +4,7 @@
 """
 >>> parse("23")
 Number(23)
->>> parse("23+42")
+>>> parse("23 + 42")
 Plus(Number(23), Number(42))
 """
 
@@ -148,7 +148,11 @@ class TokenStream:
         return res.val  # value of a token
 
     def next(self) -> None:
-        self._tok = next(self._iterator, None)
+        while True:
+            tok = next(self._iterator, None)
+            self._tok = tok
+            if tok is None or tok._type != "WS":
+                break
 
 
 def parse(text_: str) -> Node:
