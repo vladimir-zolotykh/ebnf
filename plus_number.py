@@ -3,11 +3,16 @@
 # PYTHON_ARGCOMPLETE_OK
 """
 >>> parse("23")
-Number('23' + '10')
+Number(23)
+>>> parse("23 + 42")
+Plus(Number(23), Number(42))
 """
 
 from __future__ import annotations
 from typing import Iterator
+import os
+import logging
+import functools
 from run import tokens_iter, Token
 from run import text as input_str  # noqa: F401
 
@@ -64,7 +69,7 @@ class Number(Node):
         super().__init__(val)
 
     def __repr__(self):
-        return f"Number({self._val!r})"
+        return f"Number({self._val})"
 
 
 def do_while(tok_stream, subparser, ops):
@@ -79,14 +84,37 @@ def do_while(tok_stream, subparser, ops):
     return res
 
 
+logging.basicConfig(
+    filename=f".{os.path.basename(__file__)}.log",
+    filemode="w",
+    format="%(asctime)s %(message)s",
+    level=logging.DEBUG,
+)
+logger = logging.getLogger(name=__name__)
+
+
+def with_logging(func):
+    @functools.wraps(func)
+    def _wrap(*args, **kwargs):
+        logger.info(f"{func.__name__}({args}, {kwargs})")
+        res = func(*args, **kwargs)
+        logger.info(f"{func.__name__} returned {res}")
+        return res
+
+    return _wrap
+
+
+@with_logging
 def expr(tok_stream) -> Node:
     return do_while(tok_stream, term, {"PLUS": Plus, "MINUS": Minus})
 
 
+@with_logging
 def term(tok_stream) -> Node:
     return do_while(tok_stream, factor, {"TIMES": Mul, "DIVIDE": Div})
 
 
+@with_logging
 def factor(tok_stream) -> Node:
     tok = tok_stream.peek()
     if tok._type == "LPAREN":
@@ -101,6 +129,9 @@ class TokenStream:
     def __init__(self, iterator: Iterator[Token]):
         self._iterator = iter(iterator)
         self.next()
+
+    def __repr__(self):
+        return f"<TokenStream({self._tok._type})>" if self._tok else "<TokenStream(?)>"
 
     def peek(self) -> Token:
         return self._tok
