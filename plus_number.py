@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 """
->>> text = "23 + 42 * 10"
->>> parse(input_str)
-Plus(23, Mul(42, 10))
+>>> parse("23")
+Number('23' + '10')
 """
 
 from __future__ import annotations
@@ -68,29 +67,30 @@ class Number(Node):
         return f"Number({self._val!r})"
 
 
-def expr(tok_stream) -> Node:
-    res = term(tok_stream)
-    ops = {"PLUS": Plus, "MINUS": Minus}
-    while (op := tok_stream.peek())._type in ops:
-        tok_stream.next()
-        res = ops[op._type](res, term(tok_stream))
+def do_while(tok_stream, subparser, ops):
+    res = subparser(tok_stream)
+    while True:
+        op = tok_stream.peek()
+        if op and op._type in ops:
+            tok_stream.next()
+            res = ops[op._type](res, subparser(tok_stream))
+        else:
+            break
     return res
+
+
+def expr(tok_stream) -> Node:
+    return do_while(tok_stream, term, {"PLUS": Plus, "MINUS": Minus})
 
 
 def term(tok_stream) -> Node:
-    res: Node = factor(tok_stream)
-    ops = {"TIMES": Mul, "DIVIDE": Div}
-    while (op := tok_stream.peek())._type in ops:
-        tok_stream.next()
-        res = ops[op._type](res, factor(tok_stream))
-    return res
+    return do_while(tok_stream, factor, {"TIMES": Mul, "DIVIDE": Div})
 
 
 def factor(tok_stream) -> Node:
     tok = tok_stream.peek()
     if tok._type == "LPAREN":
         res = expr(tok_stream)
-        # tok_stream.next()
         tok_stream.expect("RPAREN")
     else:
         res = Number(tok_stream.expect("NUM"))
