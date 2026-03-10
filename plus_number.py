@@ -88,6 +88,7 @@ logging.basicConfig(
     filename=f".{os.path.basename(__file__)}.log",
     filemode="w",
     format="%(asctime)s %(message)s",
+    datefmt="%H:%M:%S",
     level=logging.DEBUG,
 )
 logger = logging.getLogger(name=__name__)
@@ -96,7 +97,9 @@ logger = logging.getLogger(name=__name__)
 def with_logging(func):
     @functools.wraps(func)
     def _wrap(*args, **kwargs):
-        logger.info(f"{func.__name__}({args}, {kwargs})")
+        pos = ", ".join(str(a) for a in args)
+        kw = ", ".join(f"{k}={v}" for k, v in kwargs.items())
+        logger.info(f"{func.__name__}({', '.join(filter(None, [pos, kw]))})")
         res = func(*args, **kwargs)
         logger.info(f"{func.__name__} returned {res}")
         return res
@@ -130,7 +133,7 @@ class TokenStream:
         self._iterator = iter(iterator)
         self.next()
 
-    def __repr__(self):
+    def __str__(self):
         return f"<TokenStream({self._tok._type})>" if self._tok else "<TokenStream(?)>"
 
     def peek(self) -> Token:
