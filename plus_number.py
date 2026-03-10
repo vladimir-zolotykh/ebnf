@@ -72,18 +72,6 @@ class Number(Node):
         return f"Number({self._val})"
 
 
-def do_while(tok_stream, subparser, ops):
-    res = subparser(tok_stream)
-    while True:
-        op = tok_stream.peek()
-        if op and op._type in ops:
-            tok_stream.next()
-            res = ops[op._type](res, subparser(tok_stream))
-        else:
-            break
-    return res
-
-
 logging.basicConfig(
     filename=f".{os.path.basename(__file__)}.log",
     filemode="w",
@@ -105,6 +93,19 @@ def with_logging(func):
         return res
 
     return _wrap
+
+
+@with_logging
+def do_while(tok_stream, subparser, ops):
+    res = subparser(tok_stream)
+    while True:
+        op = tok_stream.peek()
+        if op and op._type in ops:
+            tok_stream.next()
+            res = ops[op._type](res, subparser(tok_stream))
+        else:
+            break
+    return res
 
 
 @with_logging
@@ -134,7 +135,7 @@ class TokenStream:
         self.next()
 
     def __str__(self):
-        return f"<TokenStream({self._tok._type})>" if self._tok else "<TokenStream(?)>"
+        return f"<TokenStream({self._tok})>" if self._tok else "<TokenStream(?)>"
 
     def peek(self) -> Token:
         return self._tok
