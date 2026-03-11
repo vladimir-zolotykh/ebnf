@@ -8,7 +8,7 @@
 >>> evaluator.visit(node)
 443
 >>> infix.visit(node)
-'(+ Number(23) Mul(Number(42), Number(10)))'
+'(+ 23 (* 42 10))'
 """
 import plus_number as PN
 
@@ -35,13 +35,13 @@ class Eval(Visitor):
 
 class Infix(Visitor):
     def visit_number(self, node):
-        return node._val
+        return str(node._val)
 
     def visit_plus(self, node):
-        return f"(+ {node._left} {node._right})"
+        return f"(+ {self.visit(node._left)} {self.visit(node._right)})"
 
     def visit_mul(self, node):
-        return f"(* {node._left} {node._right})"
+        return f"(* {self.visit(node._left)} {self.visit(node._right)})"
 
 
 if __name__ == "__main__":
