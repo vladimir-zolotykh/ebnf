@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+"""
+>>> node = PN.Plus(PN.Number(23), PN.Mul(PN.Number(42), PN.Number(10)))
+>>> evaluator = Eval()
+>>> infix = Infix()
+>>> evaluator.visit(node)
+443
+>>> infix.visit(node)
+'(+ Number(23) Mul(Number(42), Number(10)))'
+"""
 import plus_number as PN
 
 
@@ -36,8 +45,6 @@ class Infix(Visitor):
 
 
 if __name__ == "__main__":
-    node = PN.Plus(PN.Number(23), PN.Mul(PN.Number(42), PN.Number(10)))
-    evaluator = Eval()
-    infix = Infix()
-    print(evaluator.visit(node))
-    print(infix.visit(node))
+    import doctest
+
+    doctest.testmod()
