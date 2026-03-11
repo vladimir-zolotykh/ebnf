@@ -6,6 +6,8 @@
 Number(23)
 >>> parse("23 + 42")
 Plus(Number(23), Number(42))
+>>> parse("23 + 42 * 10")
+Plus(Number(23), Mul(Number(42), Number(10)))
 """
 
 from __future__ import annotations
