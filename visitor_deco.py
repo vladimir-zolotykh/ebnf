@@ -15,7 +15,6 @@ import plus_number as PN
 
 
 class Visitor:
-    @singledispatchmethod
     def visit(self, node):
         self.name = f"visit_{type(node).__name__.lower()}"
         return getattr(self, self.name, self.generic_visit)(node)
@@ -25,29 +24,37 @@ class Visitor:
 
 
 class Eval(Visitor):
-    @Visitor.visit.register(PN.Number)
+    @singledispatchmethod
+    def visit(self, node):
+        return super().visit(node)
+
+    @visit.register(PN.Number)
     def _(self, node):
         return node._val
 
-    @Visitor.visit.register(PN.Plus)
+    @visit.register(PN.Plus)
     def _(self, node):
         return self.visit(node._left) + self.visit(node._right)
 
-    @Visitor.visit.register(PN.Mul)
+    @visit.register(PN.Mul)
     def _(self, node):
         return self.visit(node._left) * self.visit(node._right)
 
 
 class Infix(Visitor):
-    @Visitor.visit.register(PN.Number)
+    @singledispatchmethod
+    def visit(self, node):
+        return super().visit(node)
+
+    @visit.register(PN.Number)
     def _(self, node):
         return str(node._val)
 
-    @Visitor.visit.register(PN.Plus)
+    @visit.register(PN.Plus)
     def _(self, node):
         return f"(+ {self.visit(node._left)} {self.visit(node._right)})"
 
-    @Visitor.visit.register(PN.Mul)
+    @visit.register(PN.Mul)
     def _(self, node):
         return f"(* {self.visit(node._left)} {self.visit(node._right)})"
 
