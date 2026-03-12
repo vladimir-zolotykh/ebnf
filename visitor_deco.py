@@ -22,11 +22,12 @@ class Visitor:
         raise TypeError(f"No visit method {self.name}")
 
 
+_register = {}
+
+
 def inject_visitors(cls):
-    for obj in list(cls.__dict__.values()):
-        if hasattr(obj, "_node_type"):
-            node_type = obj._node_type
-            setattr(cls, f"visit_{node_type}", obj)
+    for node_type, obj in _register.items():
+        setattr(cls, f"visit_{node_type}", obj)
     return cls
 
 
@@ -34,6 +35,7 @@ def register(node_type):
     def deco(func):
         type_name = node_type.__name__.lower()
         func._node_type = type_name
+        _register[type_name] = func
         return func
 
     return deco
@@ -52,6 +54,9 @@ class Eval(Visitor):
     @register(PN.Mul)
     def _(self, node):
         return self.visit(node._left) * self.visit(node._right)
+
+
+_register = {}
 
 
 @inject_visitors
