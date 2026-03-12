@@ -22,54 +22,52 @@ class Visitor:
         raise TypeError(f"No visit method {self.name}")
 
 
-_register = {}
+class VisitorDeco:
+    _register = {}
+
+    @classmethod
+    def inject_visitors(cls, target_cls):
+        for node_type, obj in cls._register.items():
+            setattr(target_cls, f"visit_{node_type}", obj)
+        return target_cls
+
+    @classmethod
+    def register(cls, node_type):
+        def deco(func):
+            type_name = node_type.__name__.lower()
+            func._node_type = type_name
+            cls._register[type_name] = func
+            return func
+
+        return deco
 
 
-def inject_visitors(cls):
-    for node_type, obj in _register.items():
-        setattr(cls, f"visit_{node_type}", obj)
-    return cls
-
-
-def register(node_type):
-    def deco(func):
-        type_name = node_type.__name__.lower()
-        func._node_type = type_name
-        _register[type_name] = func
-        return func
-
-    return deco
-
-
-@inject_visitors
+@VisitorDeco.inject_visitors
 class Eval(Visitor):
-    @register(PN.Number)
+    @VisitorDeco.register(PN.Number)
     def _(self, node):
         return node._val
 
-    @register(PN.Plus)
+    @VisitorDeco.register(PN.Plus)
     def _(self, node):
         return self.visit(node._left) + self.visit(node._right)
 
-    @register(PN.Mul)
+    @VisitorDeco.register(PN.Mul)
     def _(self, node):
         return self.visit(node._left) * self.visit(node._right)
 
 
-_register = {}
-
-
-@inject_visitors
+@VisitorDeco.inject_visitors
 class Infix(Visitor):
-    @register(PN.Number)
+    @VisitorDeco.register(PN.Number)
     def _(self, node):
         return str(node._val)
 
-    @register(PN.Plus)
+    @VisitorDeco.register(PN.Plus)
     def _(self, node):
         return f"(+ {self.visit(node._left)} {self.visit(node._right)})"
 
-    @register(PN.Mul)
+    @VisitorDeco.register(PN.Mul)
     def _(self, node):
         return f"(* {self.visit(node._left)} {self.visit(node._right)})"
 
