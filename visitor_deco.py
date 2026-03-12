@@ -22,27 +22,10 @@ class Visitor:
         raise TypeError(f"No visit method {self.name}")
 
 
-class UniqueUnderscoreMeta(type):
-    def __new__(mcls, name, bases, namespace):
-        counter = 1
-        new_namespace = {}
-        for attr_name, attr_val in namespace.items():
-            if attr_name == "_":
-                # rename to _1, _2, ...
-                new_namespace[f"_{counter}"] = attr_val
-                counter += 1
-            else:
-                new_namespace[attr_name] = attr_val
-        return super().__new__(mcls, name, bases, new_namespace)
-
-
 def inject_visitors(cls):
-    # for name, obj in list(cls.__dict__.items()):
     for obj in list(cls.__dict__.values()):
         if hasattr(obj, "_node_type"):
-            # node_type = getattr(obj, "_node_type")
             node_type = obj._node_type
-            print(f"{node_type = }")
             setattr(cls, f"visit_{node_type}", obj)
     return cls
 
@@ -50,41 +33,39 @@ def inject_visitors(cls):
 def register(node_type):
     def deco(func):
         type_name = node_type.__name__.lower()
-        func_name = f"_{type_name}"
         func._node_type = type_name
-        func.__name__ = func_name
         return func
 
     return deco
 
 
 @inject_visitors
-class Eval(Visitor, metaclass=UniqueUnderscoreMeta):
+class Eval(Visitor):
     @register(PN.Number)
-    def _1(self, node):
+    def _(self, node):
         return node._val
 
     @register(PN.Plus)
-    def _2(self, node):
+    def _(self, node):
         return self.visit(node._left) + self.visit(node._right)
 
     @register(PN.Mul)
-    def _3(self, node):
+    def _(self, node):
         return self.visit(node._left) * self.visit(node._right)
 
 
 @inject_visitors
-class Infix(Visitor, metaclass=UniqueUnderscoreMeta):
+class Infix(Visitor):
     @register(PN.Number)
-    def _1(self, node):
+    def _(self, node):
         return str(node._val)
 
     @register(PN.Plus)
-    def _2(self, node):
+    def _(self, node):
         return f"(+ {self.visit(node._left)} {self.visit(node._right)})"
 
     @register(PN.Mul)
-    def _3(self, node):
+    def _(self, node):
         return f"(* {self.visit(node._left)} {self.visit(node._right)})"
 
 
